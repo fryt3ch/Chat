@@ -17,7 +17,78 @@ namespace Chat.Infrastructure.Database.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.10");
 
-            modelBuilder.Entity("Chat.Application.Entities.Identity.Role", b =>
+            modelBuilder.Entity("Chat.Application.Entities.ChatEntities.Chat", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ChatType")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("LastMessageId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LastMessageId");
+
+                    b.ToTable("Chats", (string)null);
+                });
+
+            modelBuilder.Entity("Chat.Application.Entities.ChatEntities.ChatMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ChatId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ReceivedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("WatchedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChatId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ChatMessages", (string)null);
+                });
+
+            modelBuilder.Entity("Chat.Application.Entities.ChatEntities.UserChat", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ChatId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("UserId", "ChatId");
+
+                    b.HasIndex("ChatId");
+
+                    b.ToTable("UserChats", (string)null);
+                });
+
+            modelBuilder.Entity("Chat.Application.Entities.IdentityEntities.Role", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -44,7 +115,7 @@ namespace Chat.Infrastructure.Database.Migrations
                     b.ToTable("Roles", (string)null);
                 });
 
-            modelBuilder.Entity("Chat.Application.Entities.Identity.RoleClaim", b =>
+            modelBuilder.Entity("Chat.Application.Entities.IdentityEntities.RoleClaim", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -68,7 +139,7 @@ namespace Chat.Infrastructure.Database.Migrations
                     b.ToTable("RoleClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Chat.Application.Entities.Identity.User", b =>
+            modelBuilder.Entity("Chat.Application.Entities.IdentityEntities.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -111,7 +182,7 @@ namespace Chat.Infrastructure.Database.Migrations
                     b.ToTable("Users", (string)null);
                 });
 
-            modelBuilder.Entity("Chat.Application.Entities.Identity.UserClaim", b =>
+            modelBuilder.Entity("Chat.Application.Entities.IdentityEntities.UserClaim", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -127,7 +198,7 @@ namespace Chat.Infrastructure.Database.Migrations
                     b.ToTable("UserClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Chat.Application.Entities.Identity.UserRole", b =>
+            modelBuilder.Entity("Chat.Application.Entities.IdentityEntities.UserRole", b =>
                 {
                     b.Property<Guid>("UserId")
                         .HasColumnType("TEXT");
@@ -142,15 +213,24 @@ namespace Chat.Infrastructure.Database.Migrations
                     b.ToTable("UserRoles", (string)null);
                 });
 
-            modelBuilder.Entity("Chat.Application.Entities.UserProfile", b =>
+            modelBuilder.Entity("Chat.Application.Entities.UserProfileEntities.UserProfile", b =>
                 {
                     b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AvatarPhotoId")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("TEXT");
 
+                    b.Property<byte>("Color")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("Country")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Gender")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
@@ -166,40 +246,106 @@ namespace Chat.Infrastructure.Database.Migrations
                     b.ToTable("UserProfiles", (string)null);
                 });
 
-            modelBuilder.Entity("Chat.Application.Entities.Identity.RoleClaim", b =>
+            modelBuilder.Entity("Chat.Application.Entities.ChatEntities.Chat", b =>
                 {
-                    b.HasOne("Chat.Application.Entities.Identity.Role", null)
+                    b.HasOne("Chat.Application.Entities.ChatEntities.ChatMessage", "LastMessage")
+                        .WithMany()
+                        .HasForeignKey("LastMessageId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("LastMessage");
+                });
+
+            modelBuilder.Entity("Chat.Application.Entities.ChatEntities.ChatMessage", b =>
+                {
+                    b.HasOne("Chat.Application.Entities.ChatEntities.Chat", "Chat")
+                        .WithMany("ChatMessages")
+                        .HasForeignKey("ChatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Chat.Application.Entities.IdentityEntities.User", "User")
+                        .WithMany("ChatMessages")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Chat");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Chat.Application.Entities.ChatEntities.UserChat", b =>
+                {
+                    b.HasOne("Chat.Application.Entities.ChatEntities.Chat", "Chat")
+                        .WithMany("UserChats")
+                        .HasForeignKey("ChatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Chat.Application.Entities.IdentityEntities.User", "User")
+                        .WithMany("UserChats")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Chat");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Chat.Application.Entities.IdentityEntities.RoleClaim", b =>
+                {
+                    b.HasOne("Chat.Application.Entities.IdentityEntities.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Chat.Application.Entities.Identity.UserClaim", b =>
+            modelBuilder.Entity("Chat.Application.Entities.IdentityEntities.UserClaim", b =>
                 {
-                    b.HasOne("Chat.Application.Entities.Identity.User", null)
+                    b.HasOne("Chat.Application.Entities.IdentityEntities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Chat.Application.Entities.Identity.UserRole", b =>
+            modelBuilder.Entity("Chat.Application.Entities.IdentityEntities.UserRole", b =>
                 {
-                    b.HasOne("Chat.Application.Entities.Identity.Role", null)
+                    b.HasOne("Chat.Application.Entities.IdentityEntities.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Chat.Application.Entities.UserProfile", b =>
+            modelBuilder.Entity("Chat.Application.Entities.UserProfileEntities.UserProfile", b =>
                 {
-                    b.HasOne("Chat.Application.Entities.Identity.User", null)
-                        .WithOne()
-                        .HasForeignKey("Chat.Application.Entities.UserProfile", "Id")
+                    b.HasOne("Chat.Application.Entities.IdentityEntities.User", "User")
+                        .WithOne("UserProfile")
+                        .HasForeignKey("Chat.Application.Entities.UserProfileEntities.UserProfile", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Chat.Application.Entities.ChatEntities.Chat", b =>
+                {
+                    b.Navigation("ChatMessages");
+
+                    b.Navigation("UserChats");
+                });
+
+            modelBuilder.Entity("Chat.Application.Entities.IdentityEntities.User", b =>
+                {
+                    b.Navigation("ChatMessages");
+
+                    b.Navigation("UserChats");
+
+                    b.Navigation("UserProfile");
                 });
 #pragma warning restore 612, 618
         }

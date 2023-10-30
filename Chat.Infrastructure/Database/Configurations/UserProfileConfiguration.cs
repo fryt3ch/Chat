@@ -1,5 +1,6 @@
 ﻿using Chat.Application.Entities;
-using Chat.Application.Entities.Identity;
+using Chat.Application.Entities.IdentityEntities;
+using Chat.Application.Entities.UserProfileEntities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,8 +14,8 @@ public class UserProfileConfiguration : IEntityTypeConfiguration<UserProfile>
 
         builder.HasKey(x => x.Id);
 
-        builder.HasOne<User>()
-            .WithOne()
+        builder.HasOne(x => x.User)
+            .WithOne(x => x.UserProfile)
             .HasPrincipalKey<User>(x => x.Id)
             .HasForeignKey<UserProfile>(x => x.Id);
     }

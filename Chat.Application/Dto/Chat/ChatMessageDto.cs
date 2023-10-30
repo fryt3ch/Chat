@@ -1,8 +1,11 @@
-﻿namespace Chat.Application.Dto.Chat;
+namespace Chat.Application.Dto.Chat;
 
-public class ChatMessageDto
-{
-    public Guid ReceiverId { get; set; }
-    
-    public string Message { get; set; }
-}
+public record ChatMessageDto
+(
+    Guid Id,
+    Guid UserId,
+    string Content,
+    DateTime SentAt,
+    DateTime? ReceivedAt,
+    DateTime? WatchedAt
+);

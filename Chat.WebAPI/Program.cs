@@ -1,8 +1,16 @@
+using System.Reflection;
 using Chat.Application;
+using Chat.Application.Dto.Chat;
+using Chat.Application.Interfaces.Hubs;
 using Chat.Infrastructure;
 using Chat.Infrastructure.Database;
 using Chat.WebAPI.Hubs;
 using Chat.WebAPI.Middleware;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.FileProviders;
+using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,10 +20,24 @@ builder.Services
 
 builder.Services.AddCors();
 
-builder.Services.AddControllers();
+builder.Services
+    .AddControllers()
+    .AddNewtonsoftJson(options =>
+    {
+        
+    });
+
+builder.Services
+    .AddValidatorsFromAssembly(Assembly.Load("Chat.Application"))
+    .AddFluentValidationAutoValidation(x =>
+    {
+        x.DisableDataAnnotationsValidation = true;
+    });
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IChatHubService, ChatHubService>();
 
 var app = builder.Build();
 
@@ -52,6 +74,12 @@ app.UseCors(config =>
         .AllowAnyHeader()
         .AllowAnyMethod()
         .WithOrigins("localhost:4200");
+});
+
+app.UseStaticFiles(new StaticFileOptions()
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"Resources")),
+    RequestPath = new PathString("/Resources")
 });
 
 app.Run();

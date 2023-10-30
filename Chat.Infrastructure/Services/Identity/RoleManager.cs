@@ -1,5 +1,5 @@
 ﻿using System.Security.Claims;
-using Chat.Application.Entities.Identity;
+using Chat.Application.Entities.IdentityEntities;
 using Chat.Application.Interfaces.Identity;
 using Chat.Domain.Common.Results;
 using Chat.Infrastructure.Database;
@@ -45,7 +45,7 @@ public class RoleManager : IRoleManager
         var existingRole = await _dbContext.Roles.FindAsync(role.Id);
 
         if (existingRole == null)
-            return result.Failed().WithError("Role doesn't exist!");
+            return result.Failed().WithError("Role doesn't exist!", "roleNotFound");
         
         _dbContext.Attach(role);
 

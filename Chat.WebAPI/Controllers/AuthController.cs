@@ -1,14 +1,15 @@
-using Chat.Application.Dto.Identity;
-using Chat.Application.Entities.Identity;
+using Chat.Application.Dto.Auth;
+using Chat.Application.Entities.IdentityEntities;
 using Chat.Application.Interfaces.Identity;
 using Chat.Domain.Common.Results;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using IResult = Chat.Domain.Common.Results.IResult;
 
 namespace Chat.WebAPI.Controllers;
 
-[Route("api/[controller]/[action]")]
+[Route("api/auth")]
 [ApiController]
 public class AuthController : ControllerBase
 {
@@ -21,20 +22,20 @@ public class AuthController : ControllerBase
         _userManager = userManager;
     }
     
-    [HttpPost]
-    public async Task<IActionResult> SignInAsync([FromBody] SignInDto signInDto)
+    [HttpPost("signin")]
+    public async Task<IActionResult> SignInAsync([FromBody] SignInRequestDto signInRequestDto)
     {
-        var result = (new Result()).Failed().WithError("Wrong data was provided!", "wrongDataProvided");
+        var result = (new Result()).Failed().WithError("Wrong credentials were provided!", "wrongUsernameOrPassword");
         
         await _signInManager.SignOutAsync();
 
-        var user = await _userManager.FindByUsernameAsync(signInDto.Username);
+        var user = await _userManager.FindByUsernameAsync(signInRequestDto.Username);
 
         if (user == null)
             return Ok(result);
 
-        var signInResult = await _signInManager.PasswordSignInAsync(user, signInDto.Password,
-            new AuthenticationProperties() { IsPersistent = signInDto.RememberMe, });
+        var signInResult = await _signInManager.PasswordSignInAsync(user, signInRequestDto.Password,
+            new AuthenticationProperties() { IsPersistent = signInRequestDto.RememberMe, });
 
         if (!signInResult.Succeeded)
             return Ok(result);
@@ -42,23 +43,23 @@ public class AuthController : ControllerBase
         return Ok(signInResult);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> SignUpAsync([FromBody] SignUpDto signUpDto)
+    [HttpPost("signup")]
+    public async Task<IActionResult> SignUpAsync([FromBody] SignUpRequestDto signUpRequestDto)
     {
         await _signInManager.SignOutAsync();
 
         var result = await _userManager.CreateAsync(new User()
         {
-            Username = signUpDto.Username,
-            Password = signUpDto.Password,
-            Email = signUpDto.Email,
+            Username = signUpRequestDto.Username,
+            Password = signUpRequestDto.Password,
+            Email = signUpRequestDto.Email,
         });
 
         return Ok(result);
     }
 
     [Authorize]
-    [HttpGet]
+    [HttpPost("signout")]
     public async Task<IActionResult> SignOutAsync()
     {
         await _signInManager.SignOutAsync();

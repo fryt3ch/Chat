@@ -1,5 +1,5 @@
 ﻿using System.Security.Claims;
-using Chat.Application.Entities.Identity;
+using Chat.Application.Entities.IdentityEntities;
 using Chat.Domain.Common.Results;
 using Microsoft.AspNetCore.Authentication;
 

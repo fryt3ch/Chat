@@ -1,4 +1,4 @@
-﻿namespace Chat.Application.Entities.Identity;
+﻿namespace Chat.Application.Entities.IdentityEntities;
 
 public class UserRole
 {

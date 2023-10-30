@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using Chat.Domain.Common;
 
-namespace Chat.Application.Entities.Identity;
+namespace Chat.Application.Entities.IdentityEntities;
 
 public class RoleClaim : IEntity<Guid>
 {

@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Chat.Application.Entities;
-using Chat.Application.Entities.Identity;
+using Chat.Application.Entities.ChatEntities;
+using Chat.Application.Entities.IdentityEntities;
 using Chat.Application.Interfaces;
 using Chat.Application.Interfaces.Identity;
 using Chat.Domain.Enums;
@@ -68,7 +69,7 @@ public class ApplicationDbContextInitializer
 
             await _userManager.CreateAsync(defaultUser);
             
-            if ((await _userManager.CreateAsync(administrator)).Failed);
+            if ((await _userManager.CreateAsync(administrator)).Failed)
                 administrator = await _userManager.FindByUsernameAsync(administrator.Username);
             
             /*await _roleManager.CreateAsync(administratorRole);
@@ -83,7 +84,7 @@ public class ApplicationDbContextInitializer
                     Name = "Evgeny", Surname = "Semenov",
                     BirthDate = new DateTime(2002, 4, 17),
                     Country = Country.Russia,
-                });   
+                });
             }*/
         }
         catch (Exception e)

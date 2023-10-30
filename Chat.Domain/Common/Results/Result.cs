@@ -5,7 +5,7 @@ namespace Chat.Domain.Common.Results;
 /// </summary>
 public class Result : IResult
 {
-    private List<IResultError> _errors = new List<IResultError>();
+    private IResultError? _error;
 
     public Result()
     {
@@ -15,7 +15,7 @@ public class Result : IResult
     /// <summary>
     /// A collection of errors from the result
     /// </summary>
-    public IReadOnlyCollection<IResultError> Errors => _errors.AsReadOnly();
+    public IResultError? Error => _error;
 
     /// <summary>
     /// An indication whether the result has failed
@@ -33,11 +33,6 @@ public class Result : IResult
     public Dictionary<string, object> Metadata { get; internal set; } = new Dictionary<string, object>();
 
     /// <summary>
-    /// Helper proper to present the message with errors
-    /// </summary>
-    public string MessageWithErrors => $"{Message}{Environment.NewLine}{string.Join(',', _errors)}";
-
-    /// <summary>
     /// An indication whether the result is succesful
     /// </summary>
     public bool Succeeded { get; internal set; }
@@ -45,34 +40,16 @@ public class Result : IResult
     /// <summary>
     /// Any exception that might have been thrown
     /// </summary>
-    public Exception Exception { get; set; }
-
-    /// <summary>
-    /// Helper for adding error with message to result object
-    /// </summary>
-    /// <param name="errorMessage"></param>
-    public void AddError(string errorMessage)
-    {
-        _errors.Add(new ResultError(errorMessage));
-    }
-
-    /// <summary>
-    /// Helper for adding multiple errors
-    /// </summary>
-    /// <param name="errors"></param>
-    public void AddErrors(IEnumerable<IResultError> errors)
-    {
-        _errors.AddRange(errors);
-    }
+    public Exception? Exception { get; set; }
 
     /// <summary>
     /// Helper function for adding error with message and <paramref name="errorCode"/>
     /// </summary>
     /// <param name="errorMessage"></param>
     /// <param name="errorCode"></param>
-    public void AddError(string errorMessage, string errorCode)
+    public void SetError(string errorMessage, string errorCode)
     {
-        _errors.Add(new ResultError(errorMessage, errorCode));
+        _error = new ResultError(errorMessage, errorCode);
     }
 
     /// <summary>

@@ -1,12 +1,12 @@
-﻿using Chat.Application.Dto.Identity;
-using Chat.Application.Entities.Identity;
+﻿using Chat.Application.Dto.Auth;
+using Chat.Application.Entities.IdentityEntities;
 using Chat.Application.Interfaces.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chat.WebAPI.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/user")]
 [ApiController]
 public class UserController : ControllerBase
 {

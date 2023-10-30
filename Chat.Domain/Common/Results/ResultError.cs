@@ -2,7 +2,7 @@ namespace Chat.Domain.Common.Results;
 
 public class ResultError : IResultError
 {
-    public string Error { get; private set; }
+    public string Message { get; private set; }
 
     public string Code { get; private set; }
 
@@ -11,7 +11,7 @@ public class ResultError : IResultError
     }
 
     public ResultError(string error) {
-        Error = error;
+        Message = error;
     }
 
     public ResultError(string error, string code)
@@ -20,6 +20,6 @@ public class ResultError : IResultError
     }
 
     public override string ToString() {
-        return $"Error[{Code}]: {Error}";
+        return $"Error[{Code}]: {Message}";
     }
 }

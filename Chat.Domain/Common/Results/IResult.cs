@@ -2,7 +2,7 @@ namespace Chat.Domain.Common.Results;
 
 public interface IResult
 {
-    IReadOnlyCollection<IResultError> Errors { get; }
+    IResultError? Error { get; }
     string Message { get; }
 
     bool Succeeded { get; }

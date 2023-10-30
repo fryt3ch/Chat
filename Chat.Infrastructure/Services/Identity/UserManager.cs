@@ -1,5 +1,5 @@
 ﻿using System.Security.Claims;
-using Chat.Application.Entities.Identity;
+using Chat.Application.Entities.IdentityEntities;
 using Chat.Application.Interfaces.Identity;
 using Chat.Domain.Common.Results;
 using Chat.Infrastructure.Database;
@@ -32,21 +32,32 @@ public class UserManager : IUserManager
 
         user.NormalizedUsername = LookupNormalizer.NormalizeName(user.Username);
 
-        var existingLookupQuery = _dbContext.Users
-            .Where(x => x.NormalizedUsername == user.NormalizedUsername);
-        
+        IQueryable<User> existingLookupQuery = _dbContext.Users;
+
         if (user.Email != null)
         {
             user.NormalizedEmail = LookupNormalizer.NormalizeEmail(user.Email);
 
-            existingLookupQuery = existingLookupQuery
-                .Where(x => x.NormalizedEmail == user.NormalizedEmail);
+            if (user.PhoneNumber != null)
+            {
+                existingLookupQuery = existingLookupQuery
+                    .Where(x => x.NormalizedUsername == user.NormalizedUsername || x.NormalizedEmail == user.NormalizedEmail || x.PhoneNumber == user.PhoneNumber);
+            }
+            else
+            {
+                existingLookupQuery = existingLookupQuery
+                    .Where(x => x.NormalizedUsername == user.NormalizedUsername || x.NormalizedEmail == user.NormalizedEmail);
+            }
         }
-
-        if (user.PhoneNumber != null)
+        else if (user.PhoneNumber != null)
         {
             existingLookupQuery = existingLookupQuery
-                .Where(x => x.PhoneNumber == user.PhoneNumber);
+                .Where(x => x.NormalizedUsername == user.NormalizedUsername || x.PhoneNumber == user.PhoneNumber);
+        }
+        else
+        {
+            existingLookupQuery = existingLookupQuery
+                .Where(x => x.NormalizedUsername == user.NormalizedUsername);
         }
         
         var existingUser = await existingLookupQuery
@@ -56,13 +67,13 @@ public class UserManager : IUserManager
         if (existingUser != null)
         {
             if (user.NormalizedUsername == existingUser.NormalizedUsername)
-                result.AddError("User with such username already exists!", "usernameDuplicate");
+                return result.Failed().WithError("User with such username already exists!", "usernameExists");
             
-            if (user.NormalizedEmail != null && user.NormalizedEmail == existingUser.NormalizedUsername)
-                result.AddError("User with such e-mail already exists!", "emailDuplicate");
+            if (user.NormalizedEmail != null && user.NormalizedEmail == existingUser.NormalizedEmail)
+                return result.Failed().WithError("User with such e-mail already exists!", "emailExists");
             
             if (user.PhoneNumber != null && user.PhoneNumber == existingUser.PhoneNumber)
-                result.AddError("User with such phone number already exists!", "phoneNumberDuplicate");
+                return result.Failed().WithError("User with such phone number already exists!", "phoneNumberExists");
 
             return result.Failed();
         }
@@ -81,7 +92,7 @@ public class UserManager : IUserManager
         var existingUser = await _dbContext.Users.FindAsync(user.Id);
 
         if (existingUser == null)
-            return result.Failed().WithError("User doesn't exist!");
+            return result.Failed().WithError("User doesn't exist!", "userNotFound");
 
         _dbContext.Attach(user);
 

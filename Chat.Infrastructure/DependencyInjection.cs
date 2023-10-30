@@ -2,10 +2,12 @@
 using Chat.Application.Interfaces;
 using Chat.Application.Interfaces.Identity;
 using Chat.Infrastructure.Database;
+using Chat.Infrastructure.Providers;
 using Chat.Infrastructure.Services;
 using Chat.Infrastructure.Services.Identity;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,13 +29,15 @@ public static class DependencyInjection
         services.AddHttpContextAccessor();
 
         services
+            .AddSingleton<ITimeService, TimeService>()
             .AddScoped<IUserManager, UserManager>()
             .AddScoped<IRoleManager, RoleManager>()
             .AddScoped<IUserClaimsPrincipalFactory, UserClaimsPrincipalFactory>()
             .AddScoped<ISignInManager, SignInManager>()
             .AddScoped<IPasswordHasher, PasswordHasher>()
             .AddScoped<ILookupNormalizer, LookupNormalizer>()
-            .AddScoped<IUserProfileManager, UserProfileManager>();
+            .AddScoped<IUserProfileManager, UserProfileManager>()
+            .AddScoped<IChatService, ChatService>();
 
         services.AddAuthentication(IdentityConstants.ApplicationScheme)
             .AddCookie(IdentityConstants.ApplicationScheme, o =>
@@ -64,6 +68,8 @@ public static class DependencyInjection
         });
 
         services.AddSignalR();
+
+        services.AddSingleton<IUserIdProvider, UserIdProvider>();
 
         return services;
     }

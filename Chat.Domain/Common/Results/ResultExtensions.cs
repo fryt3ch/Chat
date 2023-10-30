@@ -9,30 +9,9 @@ public static class ResultExtensions
         return result;
     }
 
-    public static Result WithError(this Result result, string error)
+    public static Result WithError(this Result result, string message, string code)
     {
-        result.AddError(error);
-        
-        return result;
-    }
-
-    public static Result WithError(this Result result, string error, string code)
-    {
-        result.AddError(error, code);
-        
-        return result;
-    }
-
-    public static Result WithErrors(this Result result, List<IResultError> errors)
-    {
-        result.AddErrors(errors);
-        
-        return result;
-    }
-
-    public static Result WithErrors(this Result result, List<ResultError> errors)
-    {
-        result.AddErrors(errors);
+        result.SetError(message, code);
         
         return result;
     }
@@ -72,23 +51,9 @@ public static class ResultExtensions
         return result;
     }
 
-    public static Result<T> WithError<T>(this Result<T> result, string error)
+    public static Result<T> WithError<T>(this Result<T> result, string message, string code)
     {
-        result.AddError(error);
-        
-        return result;
-    }
-
-    public static Result<T> WithErrors<T>(this Result<T> result, List<ResultError> errors)
-    {
-        result.AddErrors(errors);
-        
-        return result;
-    }
-
-    public static Result<T> WithError<T>(this Result<T> result, string error, string code)
-    {
-        result.AddError(error, code);
+        result.SetError(message, code);
         
         return result;
     }

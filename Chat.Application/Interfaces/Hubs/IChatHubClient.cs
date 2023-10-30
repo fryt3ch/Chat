@@ -1,6 +1,10 @@
-﻿namespace Chat.Application.Interfaces.Hubs;
+﻿using Chat.Application.Dto.Chat;
+
+namespace Chat.Application.Interfaces.Hubs;
 
 public interface IChatHubClient
 {
-    Task SendPrivate();
+    Task SendMessage(SendChatMessageDto dto);
+    Task DeleteMessages(DeleteChatMessagesDto dto);
+    Task SetUserTypingState(SetUserTypingStateDto dto);
 }
