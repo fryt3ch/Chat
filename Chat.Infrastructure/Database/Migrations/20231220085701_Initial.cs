@@ -15,10 +15,10 @@ namespace Chat.Infrastructure.Database.Migrations
                 name: "Roles",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    NormalizedName = table.Column<string>(type: "TEXT", nullable: false),
-                    ConcurrencyStamp = table.Column<Guid>(type: "TEXT", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    NormalizedName = table.Column<string>(type: "text", nullable: false),
+                    ConcurrencyStamp = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -29,14 +29,14 @@ namespace Chat.Infrastructure.Database.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Username = table.Column<string>(type: "TEXT", nullable: false),
-                    NormalizedUsername = table.Column<string>(type: "TEXT", nullable: false),
-                    Password = table.Column<string>(type: "TEXT", nullable: false),
-                    Email = table.Column<string>(type: "TEXT", nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "TEXT", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "TEXT", nullable: true),
-                    ConcurrencyStamp = table.Column<Guid>(type: "TEXT", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Username = table.Column<string>(type: "text", nullable: false),
+                    NormalizedUsername = table.Column<string>(type: "text", nullable: false),
+                    Password = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
+                    ConcurrencyStamp = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -47,10 +47,10 @@ namespace Chat.Infrastructure.Database.Migrations
                 name: "RoleClaims",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    RoleId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Type = table.Column<string>(type: "TEXT", nullable: false),
-                    Value = table.Column<string>(type: "TEXT", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    RoleId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Type = table.Column<string>(type: "text", nullable: false),
+                    Value = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -67,8 +67,8 @@ namespace Chat.Infrastructure.Database.Migrations
                 name: "UserRoles",
                 columns: table => new
                 {
-                    RoleId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    UserId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    RoleId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -85,8 +85,8 @@ namespace Chat.Infrastructure.Database.Migrations
                 name: "UserClaims",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    UserId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -103,13 +103,14 @@ namespace Chat.Infrastructure.Database.Migrations
                 name: "UserProfiles",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    Surname = table.Column<string>(type: "TEXT", nullable: false),
-                    Gender = table.Column<int>(type: "INTEGER", nullable: false),
-                    BirthDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Country = table.Column<int>(type: "INTEGER", nullable: false),
-                    AvatarPhotoId = table.Column<string>(type: "TEXT", nullable: true)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Surname = table.Column<string>(type: "text", nullable: false),
+                    Gender = table.Column<int>(type: "integer", nullable: false),
+                    BirthDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Country = table.Column<int>(type: "integer", nullable: false),
+                    AvatarPhotoId = table.Column<string>(type: "text", nullable: true),
+                    Color = table.Column<byte>(type: "smallint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -126,17 +127,42 @@ namespace Chat.Infrastructure.Database.Migrations
                 name: "ChatMessages",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    UserId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ChatId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Content = table.Column<string>(type: "TEXT", nullable: false),
-                    SentAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    ReceivedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    WatchedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ChatId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ChatMessageId = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
+                    Content = table.Column<string>(type: "text", nullable: false),
+                    NormalizedContent = table.Column<string>(type: "text", nullable: false),
+                    SentAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ReceivedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    ReadAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    PinnedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    PinnedById = table.Column<Guid>(type: "uuid", nullable: true),
+                    SourceUserId = table.Column<Guid>(type: "uuid", nullable: true),
+                    SourceMessageId = table.Column<Guid>(type: "uuid", nullable: true),
+                    ReadCounter = table.Column<long>(type: "bigint", nullable: false),
+                    MessageType = table.Column<byte>(type: "smallint", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ChatMessages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ChatMessages_ChatMessages_SourceMessageId",
+                        column: x => x.SourceMessageId,
+                        principalTable: "ChatMessages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_ChatMessages_Users_PinnedById",
+                        column: x => x.PinnedById,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ChatMessages_Users_SourceUserId",
+                        column: x => x.SourceUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_ChatMessages_Users_UserId",
                         column: x => x.UserId,
@@ -149,10 +175,12 @@ namespace Chat.Infrastructure.Database.Migrations
                 name: "Chats",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    LastMessageId = table.Column<Guid>(type: "TEXT", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    ChatType = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    LastMessageId = table.Column<Guid>(type: "uuid", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ChatType = table.Column<int>(type: "integer", nullable: false),
+                    UserFirstId = table.Column<Guid>(type: "uuid", nullable: true),
+                    UserSecondId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -161,27 +189,41 @@ namespace Chat.Infrastructure.Database.Migrations
                         name: "FK_Chats_ChatMessages_LastMessageId",
                         column: x => x.LastMessageId,
                         principalTable: "ChatMessages",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_Chats_Users_UserFirstId",
+                        column: x => x.UserFirstId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Chats_Users_UserSecondId",
+                        column: x => x.UserSecondId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserChats",
+                name: "UserChatJoins",
                 columns: table => new
                 {
-                    UserId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ChatId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ChatId = table.Column<Guid>(type: "uuid", nullable: false),
+                    LastReadMessageSentAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserChats", x => new { x.UserId, x.ChatId });
+                    table.PrimaryKey("PK_UserChatJoins", x => new { x.UserId, x.ChatId });
                     table.ForeignKey(
-                        name: "FK_UserChats_Chats_ChatId",
+                        name: "FK_UserChatJoins_Chats_ChatId",
                         column: x => x.ChatId,
                         principalTable: "Chats",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserChats_Users_UserId",
+                        name: "FK_UserChatJoins_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -189,9 +231,24 @@ namespace Chat.Infrastructure.Database.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChatMessages_ChatId",
+                name: "IX_ChatMessages_ChatId_ChatMessageId",
                 table: "ChatMessages",
-                column: "ChatId");
+                columns: new[] { "ChatId", "ChatMessageId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChatMessages_PinnedById",
+                table: "ChatMessages",
+                column: "PinnedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChatMessages_SourceMessageId",
+                table: "ChatMessages",
+                column: "SourceMessageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChatMessages_SourceUserId",
+                table: "ChatMessages",
+                column: "SourceUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ChatMessages_UserId",
@@ -201,7 +258,24 @@ namespace Chat.Infrastructure.Database.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Chats_LastMessageId",
                 table: "Chats",
-                column: "LastMessageId",
+                column: "LastMessageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Chats_UserFirstId",
+                table: "Chats",
+                column: "UserFirstId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Chats_UserFirstId_UserSecondId",
+                table: "Chats",
+                columns: new[] { "UserFirstId", "UserSecondId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Chats_UserSecondId",
+                table: "Chats",
+                column: "UserSecondId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -216,8 +290,8 @@ namespace Chat.Infrastructure.Database.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserChats_ChatId",
-                table: "UserChats",
+                name: "IX_UserChatJoins_ChatId",
+                table: "UserChatJoins",
                 column: "ChatId");
 
             migrationBuilder.CreateIndex(
@@ -261,7 +335,7 @@ namespace Chat.Infrastructure.Database.Migrations
                 name: "RoleClaims");
 
             migrationBuilder.DropTable(
-                name: "UserChats");
+                name: "UserChatJoins");
 
             migrationBuilder.DropTable(
                 name: "UserClaims");

@@ -23,5 +23,5 @@ public class UserProfile : IEntity<Guid>
     
     public User User { get; set; }
     
-    public UserProfileColor Color { get; set; }
+    public ProfileColor Color { get; set; }
 }

@@ -5,109 +5,152 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace Chat.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231029095729_userProfileColor")]
-    partial class userProfileColor
+    [Migration("20231220085701_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "7.0.10");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "7.0.11")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Chat.Application.Entities.ChatEntities.Chat", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<int>("ChatType")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid?>("LastMessageId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
                     b.HasIndex("LastMessageId");
 
-                    b.ToTable("Chats", (string)null);
+                    b.ToTable("Chats");
+
+                    b.HasDiscriminator<int>("ChatType");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Chat.Application.Entities.ChatEntities.ChatMessage", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("ChatId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("ChatMessageId")
+                        .HasColumnType("numeric(20,0)");
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
+
+                    b.Property<byte>("MessageType")
+                        .HasColumnType("smallint");
+
+                    b.Property<string>("NormalizedContent")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("PinnedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("PinnedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("ReadAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("ReadCounter")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime?>("ReceivedAt")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("SentAt")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("SourceMessageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("SourceUserId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("WatchedAt")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChatId");
+                    b.HasIndex("PinnedById");
+
+                    b.HasIndex("SourceMessageId");
+
+                    b.HasIndex("SourceUserId");
 
                     b.HasIndex("UserId");
+
+                    b.HasIndex("ChatId", "ChatMessageId");
 
                     b.ToTable("ChatMessages", (string)null);
                 });
 
-            modelBuilder.Entity("Chat.Application.Entities.ChatEntities.UserChat", b =>
+            modelBuilder.Entity("Chat.Application.Entities.ChatEntities.UserChatJoin", b =>
                 {
                     b.Property<Guid>("UserId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("ChatId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("LastReadMessageSentAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("UserId", "ChatId");
 
                     b.HasIndex("ChatId");
 
-                    b.ToTable("UserChats", (string)null);
+                    b.ToTable("UserChatJoins", (string)null);
                 });
 
             modelBuilder.Entity("Chat.Application.Entities.IdentityEntities.Role", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("NormalizedName")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -122,18 +165,18 @@ namespace Chat.Infrastructure.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("RoleId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Value")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -146,32 +189,32 @@ namespace Chat.Infrastructure.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Email")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("NormalizedEmail")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("NormalizedUsername")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -189,10 +232,10 @@ namespace Chat.Infrastructure.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -204,10 +247,10 @@ namespace Chat.Infrastructure.Database.Migrations
             modelBuilder.Entity("Chat.Application.Entities.IdentityEntities.UserRole", b =>
                 {
                     b.Property<Guid>("UserId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("RoleId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -219,34 +262,63 @@ namespace Chat.Infrastructure.Database.Migrations
             modelBuilder.Entity("Chat.Application.Entities.UserProfileEntities.UserProfile", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("AvatarPhotoId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("BirthDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<byte>("Color")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("smallint");
 
                     b.Property<int>("Country")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<int>("Gender")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Surname")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
                     b.ToTable("UserProfiles", (string)null);
+                });
+
+            modelBuilder.Entity("Chat.Application.Entities.ChatEntities.GroupChat", b =>
+                {
+                    b.HasBaseType("Chat.Application.Entities.ChatEntities.Chat");
+
+                    b.HasDiscriminator().HasValue(1);
+                });
+
+            modelBuilder.Entity("Chat.Application.Entities.ChatEntities.UserChat", b =>
+                {
+                    b.HasBaseType("Chat.Application.Entities.ChatEntities.Chat");
+
+                    b.Property<Guid>("UserFirstId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserSecondId")
+                        .HasColumnType("uuid");
+
+                    b.HasIndex("UserFirstId")
+                        .IsUnique();
+
+                    b.HasIndex("UserSecondId")
+                        .IsUnique();
+
+                    b.HasIndex("UserFirstId", "UserSecondId")
+                        .IsUnique();
+
+                    b.HasDiscriminator().HasValue(0);
                 });
 
             modelBuilder.Entity("Chat.Application.Entities.ChatEntities.Chat", b =>
@@ -267,6 +339,20 @@ namespace Chat.Infrastructure.Database.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Chat.Application.Entities.IdentityEntities.User", "PinnedBy")
+                        .WithMany()
+                        .HasForeignKey("PinnedById");
+
+                    b.HasOne("Chat.Application.Entities.ChatEntities.ChatMessage", "SourceMessage")
+                        .WithMany()
+                        .HasForeignKey("SourceMessageId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Chat.Application.Entities.IdentityEntities.User", "SourceUser")
+                        .WithMany()
+                        .HasForeignKey("SourceUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Chat.Application.Entities.IdentityEntities.User", "User")
                         .WithMany("ChatMessages")
                         .HasForeignKey("UserId")
@@ -275,19 +361,25 @@ namespace Chat.Infrastructure.Database.Migrations
 
                     b.Navigation("Chat");
 
+                    b.Navigation("PinnedBy");
+
+                    b.Navigation("SourceMessage");
+
+                    b.Navigation("SourceUser");
+
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Chat.Application.Entities.ChatEntities.UserChat", b =>
+            modelBuilder.Entity("Chat.Application.Entities.ChatEntities.UserChatJoin", b =>
                 {
                     b.HasOne("Chat.Application.Entities.ChatEntities.Chat", "Chat")
-                        .WithMany("UserChats")
+                        .WithMany("UserChatJoins")
                         .HasForeignKey("ChatId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Chat.Application.Entities.IdentityEntities.User", "User")
-                        .WithMany("UserChats")
+                        .WithMany("UserChatJoins")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -335,18 +427,37 @@ namespace Chat.Infrastructure.Database.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Chat.Application.Entities.ChatEntities.UserChat", b =>
+                {
+                    b.HasOne("Chat.Application.Entities.IdentityEntities.User", "UserFirst")
+                        .WithOne()
+                        .HasForeignKey("Chat.Application.Entities.ChatEntities.UserChat", "UserFirstId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Chat.Application.Entities.IdentityEntities.User", "UserSecond")
+                        .WithOne()
+                        .HasForeignKey("Chat.Application.Entities.ChatEntities.UserChat", "UserSecondId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserFirst");
+
+                    b.Navigation("UserSecond");
+                });
+
             modelBuilder.Entity("Chat.Application.Entities.ChatEntities.Chat", b =>
                 {
                     b.Navigation("ChatMessages");
 
-                    b.Navigation("UserChats");
+                    b.Navigation("UserChatJoins");
                 });
 
             modelBuilder.Entity("Chat.Application.Entities.IdentityEntities.User", b =>
                 {
                     b.Navigation("ChatMessages");
 
-                    b.Navigation("UserChats");
+                    b.Navigation("UserChatJoins");
 
                     b.Navigation("UserProfile");
                 });

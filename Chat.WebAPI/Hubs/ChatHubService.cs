@@ -13,18 +13,53 @@ public class ChatHubService : IChatHubService
         _hubContext = hubContext;
     }
 
-    public async Task SendMessage(IEnumerable<string> userIds, SendChatMessageDto dto)
+    public async Task MessageNew(IEnumerable<string> userIds, MessagesNewDto dto)
     {
-        await _hubContext.Clients.Users(userIds).SendMessage(dto);
+        await _hubContext.Clients.Users(userIds).MessageNew(dto);
     }
 
-    public async Task DeleteMessages(IEnumerable<string> userIds, DeleteChatMessagesDto dto)
+    public async Task MessageDeleted(IEnumerable<string> userIds, DeleteChatMessagesDto dto)
     {
-        await _hubContext.Clients.Users(userIds).DeleteMessages(dto);
+        await _hubContext.Clients.Users(userIds).MessageDeleted(dto);
     }
-    
+
+    public async Task MessageEdited(IEnumerable<string> userIds, EditChatMessageDto dto)
+    {
+        await _hubContext.Clients.Users(userIds).MessageEdited(dto);
+    }
+
+    public async Task ChatRead(string userId, ChatReadDto dto)
+    {
+        await _hubContext.Clients.User(userId).ChatRead(dto);
+    }
+
     public async Task SetUserTypingState(IEnumerable<string> userIds, SetUserTypingStateDto dto)
     {
         await _hubContext.Clients.Users(userIds).SetUserTypingState(dto);
+    }
+
+    public async Task ChatNew(IEnumerable<string> userIds, ChatJoinDto dto)
+    {
+        await _hubContext.Clients.Users(userIds).ChatNew(dto);
+    }
+
+    public async Task ChatDeleted(IEnumerable<string> userIds, DeleteChatDto dto)
+    {
+        await _hubContext.Clients.Users(userIds).ChatDeleted(dto);
+    }
+
+    public async Task ChatCleared(IEnumerable<string> userIds, ClearChatDto dto)
+    {
+        await _hubContext.Clients.Users(userIds).ChatCleared(dto);
+    }
+
+    public async Task MessagePinned(IEnumerable<string> userIds, ChatMessagePinnedDto dto)
+    {
+        await _hubContext.Clients.Users(userIds).MessagePinned(dto);
+    }
+
+    public async Task MessageUnpinned(IEnumerable<string> userIds, ChatMessageUnpinnedDto dto)
+    {
+        await _hubContext.Clients.Users(userIds).MessageUnpinned(dto);
     }
 }

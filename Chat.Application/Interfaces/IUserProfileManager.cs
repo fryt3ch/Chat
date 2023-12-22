@@ -18,5 +18,6 @@ public interface IUserProfileManager
     public Task<Result> UpdateAvatarAsync(UserProfile userProfile, string photoId);
     public Task<Result> DeleteAvatarAsync(UserProfile userProfile, bool deleteImage);
     
-    public Task<Result<UserProfileDto>> GetUserProfileAsync(string idOrUsername, UserProfileRequestDto dto);
+    public Task<Result<UserProfileDto>> GetUserProfileAsync(string idOrUsername, GetUserProfileRequestDto dto);
+    public Task<Result<IEnumerable<UserProfileDto>>> SearchUserProfilesAsync(SearchUserProfilesDto dto);
 }

@@ -34,6 +34,15 @@ builder.Services
         x.DisableDataAnnotationsValidation = true;
     });
 
+builder.Services.AddSignalR(options =>
+    {
+        options.EnableDetailedErrors = true;
+        
+        options.AddFilter<HubExceptionHandler>();
+        options.AddFilter<HubValidationFilter>();
+    })
+    .AddNewtonsoftJsonProtocol();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

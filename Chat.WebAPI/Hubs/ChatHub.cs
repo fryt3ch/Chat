@@ -4,6 +4,7 @@ using Chat.Application.Entities;
 using Chat.Application.Helpers;
 using Chat.Application.Interfaces;
 using Chat.Application.Interfaces.Hubs;
+using Chat.Domain.Common.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
@@ -17,26 +18,6 @@ public class ChatHub : Hub<IChatHubClient>
     public ChatHub(IChatService chatService)
     {
         _chatService = chatService;
-    }
-
-    public async Task SendPrivateMessage(SendChatMessageRequestDto sendChatMessageRequestDto)
-    {
-        /*if (Context.UserIdentifier is null)
-            return;
-        
-        var chatMessage = new ChatMessage()
-        {
-            SenderId = Guid.Parse(Context.UserIdentifier),
-            ReceiverId = sendPrivateMessageDto.ReceiverId,
-            Content = sendPrivateMessageDto.Content,
-        };
-        
-        await _chatService.SendMessage(chatMessage);
-
-        var privateMessageDto = new ChatMessageDto(chatMessage.Id, chatMessage.SenderId, chatMessage.Content, chatMessage.SentAt,
-            chatMessage.ReceivedAt, chatMessage.WatchedAt);
-        
-        await Clients.User(privateMessageDto.UserId.ToString()).SendMessage(privateMessageDto);*/
     }
 
     public override Task OnConnectedAsync()
@@ -65,5 +46,86 @@ public class ChatHub : Hub<IChatHubClient>
         }
         
         return base.OnDisconnectedAsync(exception);
+    }
+    
+    [HubMethodName("chat.read")]
+    public async Task<Result> ChatRead(ChatReadRequestDto dto)
+    {
+        var result =
+            await _chatService.ChatRead(Guid.Parse(Context.UserIdentifier!), dto);
+        
+        return result;
+    }
+
+    [HubMethodName("chat.setTypingState")]
+    public async Task<Result> ChatSetTypingState(SetUserTypingStateRequestDto dto)
+    {
+        var result = await _chatService.SetChatUserTypingState(Guid.Parse(Context.UserIdentifier!), dto);
+
+        return result;
+    }
+    
+    [HubMethodName("chat.create")]
+    public async Task<Result> ChatCreate(CreateChatRequestDto dto)
+    {
+        var result = await _chatService.CreateChat(Guid.Parse(Context.UserIdentifier!), dto);
+
+        return result;
+    }
+    
+    [HubMethodName("chat.clear")]
+    public async Task<Result> ChatClear(ClearChatRequestDto dto)
+    {
+        var result = await _chatService.ClearChat(Guid.Parse(Context.UserIdentifier!), dto);
+
+        return result;
+    }
+    
+    [HubMethodName("chat.delete")]
+    public async Task<Result> ChatDelete(DeleteChatRequestDto dto)
+    {
+        var result = await _chatService.DeleteChat(Guid.Parse(Context.UserIdentifier!), dto);
+
+        return result;
+    }
+    
+    [HubMethodName("chats.get")]
+    public async Task<Result> ChatsGet(GetChatsRequestDto dto)
+    {
+        var result = await _chatService.GetChats(Guid.Parse(Context.UserIdentifier!), dto);
+
+        return result;
+    }
+    
+    [HubMethodName("message.send")]
+    public async Task<Result> MessageSent(SendChatMessageRequestDto dto)
+    {
+        var result = await _chatService.SendChatMessage(Guid.Parse(Context.UserIdentifier!), dto);
+
+        return result;
+    }
+    
+    [HubMethodName("message.edit")]
+    public async Task<Result> MessageEdit(EditChatMessageRequestDto dto)
+    {
+        var result = await _chatService.EditChatMessage(Guid.Parse(Context.UserIdentifier!), dto);
+
+        return result;
+    }
+    
+    [HubMethodName("messages.delete")]
+    public async Task<Result> MessagesDelete(DeleteChatMessagesRequestDto dto)
+    {
+        var result = await _chatService.DeleteChatMessages(Guid.Parse(Context.UserIdentifier!), dto);
+
+        return result;
+    }
+    
+    [HubMethodName("messages.get")]
+    public async Task<Result> MessagesGet(GetChatMessagesRequestDto dto)
+    {
+        var result = await _chatService.GetChatMessages(Guid.Parse(Context.UserIdentifier!), dto);
+
+        return result;
     }
 }

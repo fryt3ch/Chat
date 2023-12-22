@@ -5,7 +5,7 @@ namespace Chat.Application.Dto.Chat;
 
 public record SetUserTypingStateDto(Guid ChatId, Guid UserId, ChatUserTypingState State);
 
-public record SetUserTypingStateRequestDto(ChatUserTypingState State);
+public record SetUserTypingStateRequestDto(Guid ChatId, ChatUserTypingState State);
 
 public class SetUserTypingStateRequestDtoValidator : AbstractValidator<SetUserTypingStateRequestDto>
 {

@@ -5,6 +5,7 @@ using Chat.Infrastructure.Database;
 using Chat.Infrastructure.Providers;
 using Chat.Infrastructure.Services;
 using Chat.Infrastructure.Services.Identity;
+using EntityFrameworkCore.Projectables.Infrastructure;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.SignalR;
@@ -20,7 +21,13 @@ public static class DependencyInjection
     {
         services.AddDbContext<ApplicationDbContext>(o =>
         {
-            o.UseSqlite(configuration.GetConnectionString("appDatabase"));
+            //o.UseSqlite(configuration.GetConnectionString("appDatabase"));
+            o.UseNpgsql(configuration.GetConnectionString("appDatabase"));
+            
+            o.UseProjectables((config) =>
+            {
+                config.CompatibilityMode(CompatibilityMode.Limited);
+            });
         }, ServiceLifetime.Scoped);
 
         services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
@@ -66,8 +73,6 @@ public static class DependencyInjection
                 c.RequireRole("Administrator");
             });
         });
-
-        services.AddSignalR();
 
         services.AddSingleton<IUserIdProvider, UserIdProvider>();
 

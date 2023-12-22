@@ -10,13 +10,11 @@ public class CreateUserProfileRequestDtoValidator : AbstractValidator<CreateUser
     public CreateUserProfileRequestDtoValidator()
     {
         RuleFor(x => x.Name)
-            .NotNull()
+            .NotEmpty()
             .MinimumLength(2)
             .MaximumLength(15);
 
         RuleFor(x => x.Surname)
-            .NotNull()
-            .MinimumLength(2)
-            .MaximumLength(15);
+            .NotNull();
     }
 }

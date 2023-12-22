@@ -6,6 +6,7 @@ using Chat.Application.Interfaces;
 using Chat.Application.Interfaces.Identity;
 using Chat.Domain.Common.Results;
 using Chat.Infrastructure.Database;
+using Chat.Infrastructure.Database.Configurations;
 using Microsoft.EntityFrameworkCore;
 using FileNotFoundException = System.IO.FileNotFoundException;
 
@@ -60,36 +61,29 @@ public class UserProfileManager : IUserProfileManager
         return (await _dbContext.Users.Where(x => x.Id == userProfile.Id).Select(x => x.Username).FirstOrDefaultAsync())!;
     }
 
-    public async Task<Result<UserProfileDto>> GetUserProfileAsync(string idOrUsername, UserProfileRequestDto dto)
+    public async Task<Result<UserProfileDto>> GetUserProfileAsync(string idOrUsername, GetUserProfileRequestDto dto)
     {
         var result = new Result<UserProfileDto>();
         
-        IQueryable<User> usersQuery;
+        IQueryable<UserProfile> userProfilesQuery;
 
         if (Guid.TryParse(idOrUsername, out var id))
-            usersQuery = _dbContext.Users.Where(user => user.Id == id);
+            userProfilesQuery = _dbContext.UserProfiles.Where(userProfile => userProfile.Id == id);
         else
-            usersQuery = _dbContext.Users.Where(user => user.Username == idOrUsername);
-
-        var user = await usersQuery
-            .Select(user => new
-            {
-                user.Id,
-                user.Username,
+        {
+            var normalizedUsername = _lookupNormalizer.NormalizeName(idOrUsername);
             
-                user.UserProfile,
-            })
+            userProfilesQuery = _dbContext.UserProfiles.Where(userProfile => userProfile.User.NormalizedUsername == normalizedUsername);
+        }
+
+        var userProfile = await userProfilesQuery
+            .Select(user => user.ProjectToDto())
             .FirstOrDefaultAsync();
 
-        if (user == null || user.UserProfile == null)
+        if (userProfile == null)
             return result.Failed();
 
-        if (dto.Full)
-            result.Data = new UserProfileFullDto(user.Id, user.Username, user.UserProfile.Name, user.UserProfile.Surname, user.UserProfile.Gender, user.UserProfile.Country, user.UserProfile.BirthDate, user.UserProfile.AvatarPhotoId, user.UserProfile.Color);
-        else
-            result.Data = new UserProfileDto(user.Id, user.Username, user.UserProfile.Name, user.UserProfile.Surname, user.UserProfile.Gender, user.UserProfile.Country, user.UserProfile.BirthDate, user.UserProfile.AvatarPhotoId, user.UserProfile.Color);
-
-        return result;
+        return result.WithData(userProfile);
     }
 
     public async Task<Result<string>> PostPhotoAsync(UserProfile userProfile, byte[] imageBytes)
@@ -188,5 +182,20 @@ public class UserProfileManager : IUserProfileManager
         }
         
         return result.Successful();
+    }
+
+    public async Task<Result<IEnumerable<UserProfileDto>>> SearchUserProfilesAsync(SearchUserProfilesDto dto)
+    {
+        var result = new Result<IEnumerable<UserProfileDto>>();
+
+        var dtoQueryNormalized = _lookupNormalizer.NormalizeName(dto.Query);
+
+        var userProfiles = await _dbContext.UserProfiles
+            .Where(userProfile => userProfile.User.NormalizedUsername.StartsWith(dtoQueryNormalized))
+            .Select(userProfile => userProfile.ProjectToDto())
+            .Take(dto.Limit)
+            .ToListAsync();
+
+        return result.Successful().WithData(userProfiles);
     }
 }

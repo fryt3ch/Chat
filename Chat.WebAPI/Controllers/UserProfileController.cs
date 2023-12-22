@@ -22,9 +22,18 @@ public class UserProfileController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAsync(string id, [FromQuery] UserProfileRequestDto dto)
+    public async Task<IActionResult> GetAsync(string id, [FromQuery] GetUserProfileRequestDto dto)
     {
         var result = await _userProfileManager.GetUserProfileAsync(id, dto);
+
+        return Ok(result);
+    }
+    
+    [HttpGet("~/api/users/profiles/search")]
+    [Authorize]
+    public async Task<IActionResult> SearchAsync([FromQuery] SearchUserProfilesDto dto)
+    {
+        var result = await _userProfileManager.SearchUserProfilesAsync(dto);
 
         return Ok(result);
     }

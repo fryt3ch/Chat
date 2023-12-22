@@ -5,6 +5,7 @@
       <map>
         <entry key="Common:buildConfiguration" value="Debug" />
         <entry key="Common:c6407331-6b44-4387-b78b-faa107c4faef:dbContext" value="Chat.Infrastructure.Database.ApplicationDbContext" />
+        <entry key="Common:enableDiagnosticLogging" value="false" />
         <entry key="Common:noBuild" value="false" />
         <entry key="Common:outputFolder" value="Database/Migrations" />
         <entry key="Common:useDefaultConnection" value="true" />

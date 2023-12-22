@@ -1,6 +1,6 @@
 namespace Chat.Application.Enums;
 
-public enum UserProfileColor : byte
+public enum ProfileColor : byte
 {
     Blue = 0,
     Green = 1,

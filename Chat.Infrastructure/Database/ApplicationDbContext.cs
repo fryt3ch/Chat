@@ -20,6 +20,8 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 
     public DbSet<ChatMessage> ChatMessages { get; set; } = null!;
     public DbSet<Application.Entities.ChatEntities.Chat> Chats { get; set; } = null!;
+    public DbSet<Application.Entities.ChatEntities.GroupChat> GroupChats { get; set; } = null!;
+    public DbSet<Application.Entities.ChatEntities.UserChat> UserChats { get; set; } = null!;
     
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
@@ -31,5 +33,12 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         base.OnModelCreating(builder);
         
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        base.OnConfiguring(optionsBuilder);
+
+        //optionsBuilder.LogTo(Console.WriteLine);
     }
 }

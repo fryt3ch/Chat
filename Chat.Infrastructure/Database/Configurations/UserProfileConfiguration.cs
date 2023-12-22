@@ -1,6 +1,8 @@
-﻿using Chat.Application.Entities;
+﻿using Chat.Application.Dto.UserProfile;
 using Chat.Application.Entities.IdentityEntities;
 using Chat.Application.Entities.UserProfileEntities;
+using Chat.Application.Enums;
+using EntityFrameworkCore.Projectables;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -19,4 +21,20 @@ public class UserProfileConfiguration : IEntityTypeConfiguration<UserProfile>
             .HasPrincipalKey<User>(x => x.Id)
             .HasForeignKey<UserProfile>(x => x.Id);
     }
+}
+
+public static class UserProfileProjectables
+{
+    [Projectable]
+    public static UserProfileDto ProjectToDto(this UserProfile userProfile) => new UserProfileDto(
+        userProfile.Id,
+        userProfile.User.Username,
+        userProfile.Name,
+        userProfile.Surname,
+        userProfile.Gender,
+        userProfile.Country,
+        userProfile.BirthDate,
+        userProfile.AvatarPhotoId,
+        userProfile.Color
+    );
 }

@@ -8,15 +8,24 @@ namespace Chat.Application.Interfaces;
 
 public interface IChatService
 {
-    public Task<Result> SendChatMessage(Guid userId, Guid chatId, SendChatMessageRequestDto dto);
+    public Task<Result> SendChatMessage(Guid userId, SendChatMessageRequestDto dto);
     
-    public Task<Result> EditChatMessage(Guid userId, Guid chatId, Guid messageId, EditChatMessageRequestDto dto);
+    public Task<Result> EditChatMessage(Guid userId, EditChatMessageRequestDto dto);
     
-    public Task<Result> DeleteChatMessages(Guid userId, Guid chatId, HashSet<Guid> messageIds);
+    public Task<Result> DeleteChatMessages(Guid userId, DeleteChatMessagesRequestDto dto);
 
-    public Task<Result<IEnumerable<ChatPreviewDto>>> GetChatsPreviews(Guid userId, int offset, int count);
+    public Task<Result<IEnumerable<ChatDto>>> GetChats(Guid userId, GetChatsRequestDto dto);
 
-    public Task<Result<IEnumerable<ChatMessageDto>>> GetChatMessages(Guid userId, Guid chatId, int offset, int count, DateTime? minDate, DateTime? maxDate);
+    public Task<Result<GetChatMessagesDto>> GetChatMessages(Guid userId, GetChatMessagesRequestDto dto);
+    public Task<Result<GetChatMessagesDto>> GetPinnedChatMessages(Guid userId, Guid chatId, GetChatMessagesRequestDto dto);
 
-    public Task<Result> SetChatUserTypingState(Guid userId, Guid chatId, ChatUserTypingState state);
+    public Task<Result> SetChatUserTypingState(Guid userId, SetUserTypingStateRequestDto dto);
+    
+    public Task<Result> PinChatMessage(Guid userId, Guid chatId, Guid messageId);
+    public Task<Result> UnpinChatMessage(Guid userId, Guid chatId, Guid messageId);
+    
+    public Task<Result> ChatRead(Guid userId, ChatReadRequestDto dto);
+    public Task<Result<CreateChatDto>> CreateChat(Guid userId, CreateChatRequestDto dto);
+    public Task<Result> ClearChat(Guid userId, ClearChatRequestDto dto);
+    public Task<Result> DeleteChat(Guid userId, DeleteChatRequestDto dto);
 }
